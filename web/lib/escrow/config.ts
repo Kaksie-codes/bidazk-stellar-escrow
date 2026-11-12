@@ -19,6 +19,12 @@ export const TOKEN_CONTRACT_ID =
 export const TOKEN_SYMBOL = "XLM";
 export const TOKEN_DECIMALS = 7;
 
+/* The one shop every demo purchase goes to. Only its public address ships;
+   the presenter's browser imports the secret once through a private link
+   (see demo-wallets.ts), so nobody else can act as the shop. */
+export const STELLAR_SHOP_ADDRESS =
+  "GDOLSJVRTSXBSX2RLTAVRQAVJ6TESZ5HSQEPIKHG72O3UF6BB4AHV5R2";
+
 /* PUBLIC ON PURPOSE. This testnet key is the arbiter of the demo contract
    above and nothing else, so visitors can play the referee role. Anyone can
    read it from the bundle; the worst they can do is settle demo disputes

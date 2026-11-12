@@ -5,7 +5,7 @@ import Image from "next/image";
 import QRCode from "qrcode";
 import {
   fundFromFaucet,
-  isValidShopAddress,
+  importShopKeyFromUrl,
   loadDemoWallets,
   type DemoWallets,
 } from "@/lib/escrow/demo-wallets";
@@ -28,7 +28,6 @@ import styles from "./demo.module.css";
 const LEDGER_SLACK = 6;
 const POLL_MS = 5000;
 const ROLE_KEY = "bidazk-demo-role-v1";
-const SHOP_KEY = "bidazk-demo-shop-v1";
 
 const TIMERS = {
   fast: { label: "Fast demo: deliver in 3 min, inspect for 2", delivery: 180, inspection: 120 },
@@ -124,18 +123,6 @@ function writeLocal(key: string, value: string) {
   }
 }
 
-/* Accepts a full shop link or a bare address. */
-function parseShop(input: string): string | null {
-  const text = input.trim();
-  let candidate = text;
-  try {
-    candidate = new URL(text).searchParams.get("shop") ?? text;
-  } catch {
-    /* Not a URL: treat it as an address. */
-  }
-  return isValidShopAddress(candidate) ? candidate : null;
-}
-
 /* Screens live in the query string so the phone's back button works and a
    shop link (?shop=…) survives moving between them. */
 function readView(): View {
@@ -192,7 +179,9 @@ async function fetchSnapshot(w: DemoWallets): Promise<Snapshot> {
   ]);
   return {
     balances: { buyer, seller, escrow },
-    deals: all.filter((d) => d.buyer === w.buyer || d.seller === w.seller).reverse(),
+    /* Everyone sees their own purchases; only the presenter's browser, which
+       holds Stellar Shop's key, sees every order in the room. */
+    deals: all.filter((d) => d.buyer === w.buyer || (w.isShop && d.seller === w.seller)).reverse(),
   };
 }
 
@@ -206,8 +195,6 @@ export default function EscrowDemo() {
   const [search, setSearch] = useState<SearchRequest | null>(null);
   /* The request whose scan already ran, so Back shows its results instantly. */
   const [scanned, setScanned] = useState<string | null>(null);
-  const [shop, setShop] = useState<string | null>(null);
-  const [shopFromLink, setShopFromLink] = useState(false);
   const [balances, setBalances] = useState<Balances | null>(null);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -225,7 +212,7 @@ export default function EscrowDemo() {
 
   const apply = useCallback(
     (s: Snapshot, w: DemoWallets) => {
-      const incoming = s.deals.filter((d) => d.seller === w.seller && d.buyer !== w.buyer);
+      const incoming = w.isShop ? s.deals.filter((d) => d.seller === w.seller && d.buyer !== w.buyer) : [];
       if (seenOrders.current) {
         for (const d of incoming) {
           if (!seenOrders.current.has(d.id.toString())) {
@@ -256,13 +243,13 @@ export default function EscrowDemo() {
     [apply],
   );
 
-  /* Wallets, role, shop and screen live in the browser, so they load after
-     mount and never on the server. A shop link means "buy from this shop". */
+  /* Wallets, role and screen live in the browser, so they load after mount
+     and never on the server. A #shopkey link turns this browser into Stellar
+     Shop, the presenter's shop. */
   useEffect(() => {
     let alive = true;
+    const imported = importShopKeyFromUrl();
     const w = loadDemoWallets();
-    const linked = parseShop(new URLSearchParams(window.location.search).get("shop") ?? "");
-    const stored = parseShop(readLocal(SHOP_KEY) ?? "");
     const storedRole = readLocal(ROLE_KEY) === "selling" ? "selling" : "buying";
 
     fetchSnapshot(w)
@@ -281,20 +268,17 @@ export default function EscrowDemo() {
         setWallets(w);
         setView(readView());
         setSearch(readSearch());
-        if (linked && linked !== w.seller) {
-          setShop(linked);
-          setShopFromLink(true);
-          setRole("buying");
-          writeLocal(SHOP_KEY, linked);
-        } else {
-          setShop(stored && stored !== w.seller ? stored : null);
-          setRole(storedRole);
+        setRole(w.isShop ? (imported === "imported" ? "selling" : storedRole) : "buying");
+        if (imported === "imported") {
+          addLog({ text: `This browser is now ${LIVE_SHOP_NAME}. Every order in the room will arrive under "I'm selling".`, tone: "news" });
+        } else if (imported === "rejected") {
+          addLog({ text: `That link does not hold ${LIVE_SHOP_NAME}'s key. Nothing was changed.`, tone: "error" });
         }
       });
     return () => {
       alive = false;
     };
-  }, [apply]);
+  }, [apply, addLog]);
 
   useEffect(() => {
     const onPop = () => {
@@ -331,21 +315,13 @@ export default function EscrowDemo() {
     if (view.kind !== "list") go({ kind: "list" });
   }
 
-  function chooseShop(next: string | null) {
-    setShop(next);
-    setShopFromLink(false);
-    writeLocal(SHOP_KEY, next ?? "");
-    /* Keep the address bar honest, or a reload would restore the old shop. */
-    window.history.replaceState(null, "", urlFor(view, next));
-  }
-
   async function fund() {
     if (!wallets) return;
     setPhase("funding");
     try {
-      await Promise.all([fundFromFaucet(wallets.buyer), fundFromFaucet(wallets.seller)]);
+      await fundFromFaucet(wallets.buyer);
       await refresh(wallets);
-      addLog({ text: "Created your buyer wallet and your shop wallet, each funded with test XLM.", tone: "ok" });
+      addLog({ text: "Created your buyer wallet and funded it with test XLM.", tone: "ok" });
       setPhase("ready");
     } catch (err) {
       setProblem(err instanceof Error ? err.message : String(err));
@@ -398,7 +374,7 @@ export default function EscrowDemo() {
   /* Paying lands the buyer on the new order's page, where the clock starts. */
   async function acceptBid(item: CatalogItem) {
     if (!wallets || busy) return;
-    const seller = shop ?? wallets.seller;
+    const seller = wallets.seller;
     const t = TIMERS[timers];
     setBusy(`buy:${item.id}`);
     try {
@@ -434,11 +410,10 @@ export default function EscrowDemo() {
       <div className={styles.demo}>
         {problem && <p className={styles.problem}>{problem}</p>}
         <section className={styles.onboard}>
-          {shop && shopFromLink && <span className={styles.tag}>You scanned shop {short(shop)}</span>}
           <h2 className={styles.h2}>Get your test wallets</h2>
           <p className={styles.body}>
-            One tap gives this phone a buyer wallet and a shop wallet, each
-            funded with free testnet XLM. No app, no sign-up, no real money.
+            One tap gives this phone a buyer wallet funded with free testnet
+            XLM. No app, no sign-up, no real money.
           </p>
           <button className={styles.btnPrimary} onClick={fund} disabled={phase === "funding"}>
             {phase === "funding" ? "Funding wallets…" : "Create test wallets"}
@@ -451,8 +426,10 @@ export default function EscrowDemo() {
   const { escrow } = wallets;
   const myOrders = deals.filter((d) => d.buyer === wallets.buyer);
   const myShopOrders = deals.filter((d) => d.seller === wallets.seller);
-  const activeShop = shop ?? wallets.seller;
-  const shopLink = `${window.location.origin}/demo?shop=${wallets.seller}`;
+  const activeShop = wallets.seller;
+  /* The QR code only needs to bring people to the demo: every purchase
+     already goes to Stellar Shop. */
+  const shopLink = `${window.location.origin}/demo`;
   /* An item with an open or completed order is already bought; search
      results link to that order instead of offering to pay again. */
   const orderForItem = (itemId: number): string | null => {
@@ -465,14 +442,16 @@ export default function EscrowDemo() {
   const item = view.kind === "item" ? catalogItem(view.id) : undefined;
   const itemOrder = item ? myOrders.find((d) => d.itemId === item.id && FILLED.includes(d.status)) : undefined;
   const itemFilled = !!itemOrder;
+  /* The shop side of an order exists only in the presenter's browser. */
+  const shopCanAct = (d: Deal) => wallets.isShop && d.seller === wallets.seller;
   const orderSide: Side | undefined = order
-    ? role === "buying"
-      ? order.buyer === wallets.buyer
+    ? role === "selling" && shopCanAct(order)
+      ? "seller"
+      : order.buyer === wallets.buyer
         ? "buyer"
-        : "seller"
-      : order.seller === wallets.seller
-        ? "seller"
-        : "buyer"
+        : shopCanAct(order)
+          ? "seller"
+          : undefined
     : undefined;
 
   const walletStrip = (
@@ -513,7 +492,7 @@ export default function EscrowDemo() {
           onClick={() => chooseRole("selling")}
         >
           I&apos;m selling
-          {myShopOrders.some(isOpen) && <span className={styles.tabDot} />}
+          {wallets.isShop && myShopOrders.some(isOpen) && <span className={styles.tabDot} />}
         </button>
       </div>
 
@@ -631,13 +610,18 @@ export default function EscrowDemo() {
       {/* ---------------------------------------------------- buyer home */}
       {(view.kind === "list" || (view.kind === "item" && !item)) && role === "buying" && (
         <>
-          <ShopBar
-            shop={activeShop}
-            own={activeShop === wallets.seller}
-            fromLink={shopFromLink}
-            onChange={chooseShop}
-            onSell={() => chooseRole("selling")}
-          />
+          <section className={styles.shopBar} aria-label="Shop">
+            <div className={styles.shopBarMain}>
+              <span className={styles.roleLabel}>Buying from</span>
+              <span className={styles.shopName}>
+                {LIVE_SHOP_NAME} <span className={styles.mono}>· {short(activeShop)}</span>
+              </span>
+              <span className={styles.shopHint}>
+                The presenter&apos;s shop. Every order lands on their screen, and your
+                money waits in escrow until they deliver.
+              </span>
+            </div>
+          </section>
 
           {myOrders.length > 0 && (
             <OrderRows title="Your orders" deals={myOrders} side="buyer" now={now} onOpen={(id) => go({ kind: "order", id })} />
@@ -663,18 +647,32 @@ export default function EscrowDemo() {
       )}
 
       {/* ---------------------------------------------------- seller home */}
-      {(view.kind === "list" || (view.kind === "item" && !item)) && role === "selling" && (
+      {(view.kind === "list" || (view.kind === "item" && !item)) && role === "selling" && !wallets.isShop && (
+        <section className={styles.onboard} aria-label="Stellar Shop">
+          <h2 className={styles.h2}>{LIVE_SHOP_NAME} is run by the presenter</h2>
+          <p className={styles.body}>
+            Every purchase in this demo goes to one shop, so the whole room can
+            watch orders arrive and get delivered on the big screen. Switch to
+            &ldquo;I&apos;m buying&rdquo; to place an order.
+          </p>
+          <button className={styles.btnPrimary} onClick={() => chooseRole("buying")}>
+            Go to I&apos;m buying
+          </button>
+        </section>
+      )}
+
+      {(view.kind === "list" || (view.kind === "item" && !item)) && role === "selling" && wallets.isShop && (
         <>
           {walletStrip}
           <section className={styles.shopCard} aria-label="Your shop">
             <ShopQr link={shopLink} />
             <div className={styles.shopCopy}>
               <span className={styles.tag}>Your shop · {LIVE_SHOP_NAME} · {short(wallets.seller)}</span>
-              <h2 className={styles.h3}>Let a buyer scan this</h2>
+              <h2 className={styles.h3}>Let the room scan this</h2>
               <p className={styles.small}>
-                They point their phone camera at the code, open the link, and
-                see your winning bids. When they pay, the order lands below and
-                the money waits in escrow until you deliver.
+                It opens the demo on their phone. Everything they buy comes to
+                this shop: the order lands below and the money waits in escrow
+                until you deliver.
               </p>
               <CopyLink link={shopLink} />
             </div>
@@ -751,77 +749,6 @@ function WalletCard(props: { role: string; note: string; address: string; balanc
         </a>
       </span>
     </div>
-  );
-}
-
-function ShopBar(props: {
-  shop: string;
-  own: boolean;
-  fromLink: boolean;
-  onChange: (shop: string | null) => void;
-  onSell: () => void;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  function submit() {
-    const parsed = parseShop(value);
-    if (!parsed) {
-      setError("That is not a shop link or a Stellar address.");
-      return;
-    }
-    props.onChange(parsed);
-    setEditing(false);
-    setValue("");
-    setError(null);
-  }
-
-  return (
-    <section className={styles.shopBar} aria-label="Shop">
-      <div className={styles.shopBarMain}>
-        <span className={styles.roleLabel}>Buying from</span>
-        <span className={styles.shopName}>
-          {LIVE_SHOP_NAME} <span className={styles.mono}>· {short(props.shop)}</span>
-        </span>
-        <span className={styles.shopHint}>
-          {props.own
-            ? "Your own test shop. For the real thing, scan someone else's shop code."
-            : props.fromLink
-              ? "From the shop code you scanned."
-              : "A shop you chose earlier."}
-        </span>
-      </div>
-      <div className={styles.roleButtons}>
-        {!props.own && (
-          <button className={styles.btnGhost} onClick={() => props.onChange(null)}>
-            Use my own shop
-          </button>
-        )}
-        <button className={styles.btnGhost} onClick={() => setEditing((v) => !v)}>
-          Paste a shop link
-        </button>
-        {props.own && (
-          <button className={styles.btnGhost} onClick={props.onSell}>
-            Show my shop code
-          </button>
-        )}
-      </div>
-      {editing && (
-        <div className={styles.pasteRow}>
-          <input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="https://bidazk.xyz/demo?shop=G…"
-            aria-label="Shop link or address"
-          />
-          <button className={styles.btnPrimary} onClick={submit}>
-            Use shop
-          </button>
-          {error && <span className={styles.fieldError}>{error}</span>}
-        </div>
-      )}
-    </section>
   );
 }
 

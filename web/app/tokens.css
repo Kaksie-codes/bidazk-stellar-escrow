@@ -1,0 +1,325 @@
+/* ============================================================================
+   Bidazk Color System v4
+   ----------------------------------------------------------------------------
+   Revised 2026-08-13. Rationale: docs/color-system.md
+
+   Anchored on values extracted from Upwork's live site, chosen because Upwork
+   is the closest structural analogue to Bidazk: a reverse marketplace where
+   demand is posted and supply bids for it.
+
+   What that buys us:
+     - #14A800 is a yellow-leaning green (hue ~113). Bumpa's #009444 is
+       blue-leaning (hue ~148). 35 degrees apart, so we read as green without
+       reading as Bumpa.
+     - #001E00 is a green-black rather than a neutral black. It is what makes
+       the dark sections feel considered instead of default.
+     - #F7FAF7 is an off-white with a green cast. Softer on the eye than pure
+       white on a bright screen, and it makes white cards actually read as
+       raised rather than blending into the page.
+
+   Structure:
+     1. Raw scales:      never used directly in components
+     2. Semantic tokens: always use these
+     3. Opt-in dark surfaces: POS chrome only, never the site
+
+   Rules:
+     - Components reference semantic tokens only, never raw scale values.
+     - Green is action. Petrol is success. Never swap them.
+     - Agent Violet is reserved for autonomous agent activity.
+     - Bid states always pair color with an icon and a text label.
+   ========================================================================== */
+
+:root {
+  /* ── 1. Raw scales ─────────────────────────────────────────────────── */
+
+  /* Green: primary brand and every action.
+     500, 600 and 950 are Upwork's own values. */
+  --green-50:  #f0fbe9;
+  --green-100: #dcf5cc;
+  --green-200: #bbeb9d;
+  --green-300: #8ddc63;
+  --green-400: #52c521;
+  --green-500: #14a800;
+  --green-600: #0f8a00;
+  --green-700: #0c7a00;
+  --green-800: #0a6000;
+  --green-900: #0a4a02;
+  --green-950: #001e00;
+
+  /* Petrol: SUCCESS and positive completed states, never the primary.
+     74 degrees of hue from the brand green, so the two can never be
+     confused at chip size on a poor screen. */
+  --petrol-50:  #ecfafb;
+  --petrol-100: #cff2f4;
+  --petrol-200: #a0e5e9;
+  --petrol-300: #6bd3da;
+  --petrol-400: #2fbac4;
+  --petrol-500: #1aa5af;
+  --petrol-600: #128692;
+  --petrol-700: #106c77;
+  --petrol-800: #115660;
+  --petrol-900: #11454d;
+  --petrol-950: #06272c;
+
+  /* Sage: green-tinted neutrals. 50 through 500 are Upwork's own values. */
+  --sage-0:   #ffffff;
+  --sage-50:  #f7faf7;
+  --sage-100: #f2f7f2;
+  --sage-200: #e4ebe4;
+  --sage-300: #d5e0d5;
+  --sage-400: #beccbe;
+  --sage-500: #9aaa97;
+  --sage-600: #7d8a7a;
+  --sage-700: #5d6b5a;
+  --sage-800: #3d4a3b;
+  --sage-900: #232d22;
+  --sage-950: #0f140e;
+
+  /* Agent Violet: autonomous agent activity only */
+  --violet-50:  #f3eefe;
+  --violet-100: #e5dbfd;
+  --violet-200: #cdbafa;
+  --violet-300: #ae90f5;
+  --violet-400: #8c63f1;
+  --violet-500: #6d3beb;
+  --violet-600: #5b2fc9;
+  --violet-700: #4a26a4;
+  --violet-800: #3b1f82;
+  --violet-900: #2f1a64;
+  --violet-950: #1c0f3e;
+
+  /* Danger. Warmed slightly toward Upwork's coral so it sits with the
+     yellow-green brand rather than fighting it. */
+  --danger-50:  #fef4f2;
+  --danger-100: #fee2dd;
+  --danger-300: #fca79b;
+  --danger-500: #e8402a;
+  --danger-600: #cc2f1c;
+  --danger-700: #a82616;
+  --danger-900: #6b170e;
+
+  /* Warning */
+  --warning-50:  #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-300: #fcd34d;
+  --warning-500: #d97706;
+  --warning-600: #b45309;
+  --warning-700: #92400e;
+  --warning-900: #5c2a08;
+
+  /* ── 2. Semantic tokens ────────────────────────────────────────────── */
+
+  /* Surfaces. The page ground is a green-cast off-white, not pure white,
+     so it is easier on the eye and lets white cards read as raised. */
+  --bg-canvas:  var(--sage-50);
+  --bg-surface: var(--sage-0);
+  --bg-raised:  var(--sage-100);
+  --bg-sunken:  var(--sage-200);
+
+  /* Borders */
+  --border-subtle:  var(--sage-200);
+  --border-default: var(--sage-300);
+  --border-strong:  var(--sage-400);
+
+  /* Text. Primary is the green-black, not a neutral black. */
+  --text-primary:     var(--green-950);
+  --text-secondary:   var(--sage-700);
+  --text-tertiary:    var(--sage-800);
+  --text-placeholder: var(--sage-500);
+  --text-inverse:     var(--sage-50);
+
+  /* Money: highest contrast in the system. 16.8:1 on the canvas. */
+  --text-money: var(--green-950);
+
+  /* Primary action.
+     CONTRAST BUDGET, checked against white labels:
+       green-500 #14A800 = 3.2:1  decorative and large display text only
+       green-600 #0F8A00 = 4.5:1  borderline, avoid for body-size labels
+       green-700 #0C7A00 = 5.5:1  buttons live here
+       green-800 #0A6000 = 7.4:1  hover
+     Never move a button above 700 without re-checking. */
+  --action-primary:       var(--green-700);
+  --action-primary-hover: var(--green-800);
+  --action-primary-text:  var(--sage-0);
+  --action-subtle:        var(--green-50);
+  --action-subtle-text:   var(--green-700);
+
+  /* Brand marks. 500 is the vivid Upwork green, reserved for decorative
+     marks and display-size text where 3:1 is sufficient. 600 is the
+     text-safe version for anything smaller. */
+  --brand:        var(--green-500);
+  --brand-strong: var(--green-600);
+  --focus-ring:   var(--green-600);
+
+  /* Full-bleed brand block. 5.3:1 with white text. */
+  --bg-brand-block: #0e7d00;
+
+  /* Info reuses the brand green. Deliberately no separate info blue. */
+  --info-fill: var(--green-50);
+  --info-text: var(--green-700);
+
+  /* Autonomous agent */
+  --agent-fill:   var(--violet-50);
+  --agent-border: var(--violet-200);
+  --agent-text:   var(--violet-600);
+  --agent-icon:   var(--violet-500);
+
+  /* States. Success is Petrol, NOT green, so a completed state can never
+     be confused with a button. Always paired with an icon and a label. */
+  --success-fill: var(--petrol-50);
+  --success-text: var(--petrol-700);
+  --danger-fill:  var(--danger-50);
+  --danger-text:  var(--danger-600);
+  --warning-fill: var(--warning-50);
+  --warning-text: var(--warning-600);
+
+  /* Offline POS outbox: always rendered with a queue-depth numeral,
+     which is what distinguishes it from a generic warning. */
+  --outbox-fill:       var(--warning-100);
+  --outbox-text:       var(--warning-600);
+  --outbox-count-bg:   var(--warning-500);
+  --outbox-count-text: var(--sage-0);
+
+  /* Bid states */
+  --bid-new-fill:      var(--green-50);
+  --bid-new-text:      var(--green-700);
+  --bid-agent-fill:    var(--violet-50);
+  --bid-agent-text:    var(--violet-600);
+  --bid-counter-fill:  var(--warning-50);
+  --bid-counter-text:  var(--warning-600);
+  --bid-accepted-fill: var(--petrol-50);
+  --bid-accepted-text: var(--petrol-700);
+  --bid-rejected-fill: var(--danger-50);
+  --bid-rejected-text: var(--danger-600);
+  --bid-outbid-fill:   var(--sage-100);
+  --bid-outbid-text:   var(--sage-700);
+
+  /* Price buffer band, diverging. The clearing zone uses Petrol because
+     it means "a deal can complete here", which is a success state. */
+  --buffer-illegal:  var(--danger-500);
+  --buffer-approach: var(--warning-500);
+  --buffer-clearing: var(--petrol-500);
+
+  /* Mode chrome: modes are distinguished by surface treatment, not hue */
+  --chrome-buyer-bg:    var(--sage-0);
+  --chrome-buyer-text:  var(--green-950);
+  --chrome-seller-bg:   var(--green-950);
+  --chrome-seller-text: var(--sage-50);
+
+  /* Decorative surface tints, for section rhythm only.
+     Blush and sand are Upwork's own panel washes. These sit far lighter
+     than any semantic fill and never carry semantic text colors, so a
+     tinted panel can never be misread as a state. */
+  --tint-green: #eef7ea;
+  --tint-sky:   #eef4fa;
+  --tint-blush: #fef6f5;
+  --tint-sand:  #fefae2;
+
+  /* Inverse ground. Upwork's green-black, which is what keeps the dark
+     sections from reading as a default near-black.
+
+     Raised surfaces and borders are DESATURATED, not saturated green. A
+     green card on a green ground reads as one flat mass and leaves the
+     CTA nothing to pop against. Bumpa gets this right: near-black ground,
+     neutral card, vivid green button. */
+  --bg-inverse:            var(--green-950);
+  --bg-inverse-raised:     var(--sage-900);
+  --text-on-inverse:       var(--sage-50);
+  --text-on-inverse-soft:  var(--sage-400);
+  --accent-on-inverse:     var(--green-300);
+  --border-on-inverse:     var(--sage-800);
+
+  /* Actions on a dark ground. The button gets BRIGHTER, not darker, and
+     carries the green-black as its label. 5.6:1, so it passes where a
+     white label on the same green would fail at 3.2:1. */
+  --action-on-inverse:      var(--green-500);
+  --action-on-inverse-text: var(--green-950);
+
+  /* Elevation, tinted green so shadows sit with the neutral ramp. */
+  --shadow-sm: 0 1px 2px rgba(0, 30, 0, 0.07);
+  --shadow-md: 0 1px 2px rgba(0, 30, 0, 0.06), 0 10px 26px -14px rgba(0, 30, 0, 0.24);
+}
+
+/* ── 3. Opt-in dark surfaces (POS only) ──────────────────────────────── */
+
+/* The site is light-only. The dark token set below is NOT applied by an OS
+   preference. It exists solely for surfaces that opt in explicitly, namely
+   the Seller-mode POS chrome, which is used in dim shops. Nothing on the
+   marketing site or buyer surfaces should ever set data-theme="dark". */
+
+:root[data-theme="dark"] {
+  --bg-canvas:  var(--green-950);
+  --bg-surface: var(--sage-900);
+  --bg-raised:  var(--sage-800);
+  --bg-sunken:  var(--sage-950);
+
+  --tint-green: #0a2b06;
+  --tint-sky:   #16202e;
+  --tint-blush: #2b1d18;
+  --tint-sand:  #2a2418;
+
+  --border-subtle:  var(--sage-800);
+  --border-default: var(--sage-700);
+  --border-strong:  var(--sage-600);
+
+  --text-primary:     var(--sage-50);
+  --text-secondary:   var(--sage-400);
+  --text-tertiary:    var(--sage-300);
+  --text-placeholder: var(--sage-600);
+  --text-inverse:     var(--green-950);
+  --text-money:       var(--sage-0);
+
+  --action-primary:       var(--green-400);
+  --action-primary-hover: var(--green-300);
+  --action-primary-text:  var(--green-950);
+  --action-subtle:        var(--green-900);
+  --action-subtle-text:   var(--green-200);
+
+  --brand:        var(--green-400);
+  --brand-strong: var(--green-300);
+  --focus-ring:   var(--green-300);
+
+  --bg-brand-block: var(--green-800);
+
+  --action-on-inverse:      var(--green-400);
+  --action-on-inverse-text: var(--green-950);
+
+  --info-fill: var(--green-900);
+  --info-text: var(--green-200);
+
+  --agent-fill:   var(--violet-900);
+  --agent-border: var(--violet-700);
+  --agent-text:   var(--violet-300);
+  --agent-icon:   var(--violet-400);
+
+  --success-fill: var(--petrol-900);
+  --success-text: var(--petrol-300);
+  --danger-fill:  var(--danger-900);
+  --danger-text:  var(--danger-300);
+  --warning-fill: var(--warning-900);
+  --warning-text: var(--warning-300);
+
+  --outbox-fill:       var(--warning-900);
+  --outbox-text:       var(--warning-300);
+  --outbox-count-bg:   var(--warning-500);
+  --outbox-count-text: var(--sage-950);
+
+  --bid-new-fill:      var(--green-900);
+  --bid-new-text:      var(--green-200);
+  --bid-agent-fill:    var(--violet-900);
+  --bid-agent-text:    var(--violet-300);
+  --bid-counter-fill:  var(--warning-900);
+  --bid-counter-text:  var(--warning-300);
+  --bid-accepted-fill: var(--petrol-900);
+  --bid-accepted-text: var(--petrol-300);
+  --bid-rejected-fill: var(--danger-900);
+  --bid-rejected-text: var(--danger-300);
+  --bid-outbid-fill:   var(--sage-800);
+  --bid-outbid-text:   var(--sage-400);
+
+  --chrome-buyer-bg:   var(--green-950);
+  --chrome-buyer-text: var(--sage-50);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 26px -14px rgba(0, 0, 0, 0.7);
+}

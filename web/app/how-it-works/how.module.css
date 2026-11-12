@@ -1,0 +1,375 @@
+/* How it works. Same rhythm as the landing page: paper → tint → paper →
+   inverse → paper, so the long read never sits on one flat ground. */
+
+.inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+.section {
+  padding-block: clamp(3rem, 7vw, 5rem);
+}
+
+.sectionLede {
+  max-width: 640px;
+  margin-top: 0.75rem;
+}
+
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--action-subtle-text);
+  margin-bottom: 1rem;
+}
+
+.h1 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.2rem, 5.6vw, 4rem);
+  font-weight: 600;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 100;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  max-width: 950px;
+  margin-bottom: 1.2rem;
+}
+
+.h1 em {
+  font-style: normal;
+  color: var(--brand-strong);
+}
+
+.h2 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.75rem, 3.6vw, 2.6rem);
+  font-weight: 600;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 60;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.h3 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.45rem;
+}
+
+.lede {
+  font-size: clamp(1rem, 1.45vw, 1.14rem);
+  line-height: 1.65;
+  color: var(--text-secondary);
+  max-width: 700px;
+}
+
+.body {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* ── Hero ──────────────────────────────────────────────────────────── */
+
+.hero {
+  padding-block: clamp(3rem, 8vw, 5.5rem) clamp(1rem, 3vw, 2rem);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.75rem;
+}
+
+.btnPrimary,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 650;
+  border-radius: 8px;
+  padding: 0.85rem 1.4rem;
+  white-space: nowrap;
+}
+
+.btnPrimary {
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+}
+
+.btnPrimary:hover {
+  background: var(--action-primary-hover);
+}
+
+.btnGhost {
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+}
+
+.btnGhost:hover {
+  border-color: var(--border-strong);
+}
+
+/* ── Flow ──────────────────────────────────────────────────────────── */
+
+.flow {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 720px) {
+  .flow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1060px) {
+  .flow {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.flowItem {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 1.3rem;
+}
+
+.flowN {
+  display: block;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--brand-strong);
+  margin-bottom: 0.9rem;
+}
+
+/* ── States ────────────────────────────────────────────────────────── */
+
+.band {
+  background: var(--tint-green);
+}
+
+.states {
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  counter-reset: none;
+}
+
+@media (min-width: 860px) {
+  .states {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stateItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: var(--bg-surface);
+  border-radius: 14px;
+  padding: 1.2rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.stateItem strong {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stateIndex {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--action-subtle);
+  color: var(--action-subtle-text);
+  margin-bottom: 0.3rem;
+}
+
+/* ── Cases ─────────────────────────────────────────────────────────── */
+
+.cases {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 720px) {
+  .cases {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1060px) {
+  .cases {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.case {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 1.3rem;
+}
+
+.side {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 650;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.8rem;
+}
+
+.sideBuyer {
+  background: var(--info-fill);
+  color: var(--info-text);
+}
+
+.sideSeller {
+  background: var(--success-fill);
+  color: var(--success-text);
+}
+
+/* ── Inverse ───────────────────────────────────────────────────────── */
+
+.inverse {
+  background: var(--bg-inverse);
+  color: var(--text-on-inverse);
+}
+
+.bodyInverse {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-on-inverse-soft);
+}
+
+.guarantees {
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 860px) {
+  .guarantees {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.guarantees li {
+  position: relative;
+  padding: 1.1rem 1.2rem 1.1rem 2.9rem;
+  border-radius: 12px;
+  background: var(--bg-inverse-raised);
+  border: 1px solid var(--border-on-inverse);
+  line-height: 1.55;
+  font-size: 0.94rem;
+}
+
+.guarantees li::before {
+  content: "✓";
+  position: absolute;
+  left: 1.1rem;
+  top: 1.05rem;
+  font-weight: 700;
+  color: var(--accent-on-inverse);
+}
+
+/* ── Roadmap ───────────────────────────────────────────────────────── */
+
+.roadmap {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 760px) {
+  .roadmap {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.road {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 1.3rem;
+}
+
+.roadTag {
+  display: inline-block;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--action-subtle-text);
+  margin-bottom: 0.8rem;
+}
+
+.road ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.road li {
+  font-size: 0.93rem;
+  line-height: 1.5;
+  padding-left: 1.1rem;
+  position: relative;
+}
+
+.road li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+/* ── Closer ────────────────────────────────────────────────────────── */
+
+.closer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding-block: 1rem 5rem;
+}
+
+.closer .body {
+  max-width: 480px;
+}

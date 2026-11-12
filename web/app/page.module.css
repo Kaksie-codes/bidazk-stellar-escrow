@@ -1,0 +1,1715 @@
+/* Bidazk landing page.
+   Colors come from semantic tokens only. No raw scales, no literals.
+   Section rhythm: paper → tint → inverse → tint → brand → inverse, so the
+   page never sits on one flat ground for long. */
+
+.page {
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --maxw: 1200px;
+  --radius: 18px;
+  /* announce (36px) + nav (66px), kept in sync with .announceInner and
+     .navInner heights, since the fixed header is offset by this value */
+  --header-h: 102px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: var(--header-h);
+}
+
+/* The header is out of flow, so .page compensates with padding-top above.
+   Both bars stay put, so nothing at the top of the page scrolls away. */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.inner {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.narrow {
+  max-width: 760px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* Structural device: mono micro-label. Used only where something is being
+   counted, timed, classified or flagged as provisional. */
+.tag {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ── Announce ─────────────────────────────────────────────────────────── */
+
+.announce {
+  background: var(--bg-inverse);
+  color: var(--text-on-inverse-soft);
+}
+
+.announceInner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 36px;
+  font-size: 0.74rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-on-inverse);
+  flex: none;
+}
+
+.announceStrong {
+  color: var(--accent-on-inverse);
+  font-weight: 700;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.hideSmall {
+  display: none;
+}
+
+@media (min-width: 760px) {
+  .hideSmall {
+    display: inline;
+  }
+}
+
+/* ── Nav ──────────────────────────────────────────────────────────────── */
+
+.nav {
+  background: color-mix(in srgb, var(--bg-canvas) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.navInner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: 66px;
+}
+
+.brand {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  flex: none;
+}
+
+.brandDot {
+  color: var(--brand);
+}
+
+.navLinks {
+  display: none;
+  gap: 1.4rem;
+}
+
+@media (min-width: 900px) {
+  .navLinks {
+    display: flex;
+  }
+}
+
+.navLink {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.navLink:hover {
+  color: var(--text-primary);
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+
+.btnPrimary,
+.btnGhost,
+.btnOnBrand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font: inherit;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0.72rem 1.25rem;
+}
+
+.btnPrimary {
+  border: 0;
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+}
+
+.btnPrimary:hover {
+  background: var(--action-primary-hover);
+}
+
+.btnGhost {
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.btnGhost:hover {
+  border-color: var(--border-strong);
+}
+
+/* Used only on inverse grounds. Vivid green with a green-black label,
+   so the CTA pops off the dark instead of going white-on-dark. */
+.btnOnBrand {
+  border: 0;
+  background: var(--action-on-inverse);
+  color: var(--action-on-inverse-text);
+}
+
+.btnOnBrand:hover {
+  background: var(--brand-strong);
+}
+
+.btnLarge {
+  padding: 0.95rem 1.7rem;
+  font-size: 1.02rem;
+}
+
+/* ── Display type ─────────────────────────────────────────────────────── */
+
+.h1 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.7rem, 7vw, 5rem);
+  font-weight: 600;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 100;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  margin-bottom: 1.15rem;
+}
+
+/* --brand-strong, not --brand: the vivid green is only 3.2:1 on the canvas,
+   which is legal at display size but reads washed. */
+.h1 em {
+  font-style: normal;
+  color: var(--brand-strong);
+}
+
+.h2 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.85rem, 3.8vw, 2.8rem);
+  font-weight: 600;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 60;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.h3 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+  font-weight: 600;
+  font-variation-settings: "SOFT" 20, "opsz" 40;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6rem;
+}
+
+.lede {
+  font-size: clamp(1rem, 1.45vw, 1.14rem);
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+.body {
+  font-size: 0.94rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────── */
+
+.hero {
+  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(2rem, 4vw, 3rem);
+  text-align: center;
+}
+
+.heroLede {
+  max-width: 54ch;
+  margin: 0 auto 2.25rem;
+}
+
+/* ── Hero switch ──────────────────────────────────────────────────────── */
+
+.switchWrap {
+  max-width: 800px;
+  margin-inline: auto;
+  text-align: left;
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 4px;
+  gap: 3px;
+  border-radius: 999px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 1rem;
+}
+
+.segment {
+  position: relative;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 0.5rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.segment:hover {
+  color: var(--text-primary);
+}
+
+/* The pill is a separate layer so Motion can slide it between segments
+   with layoutId rather than cross-fading two backgrounds. */
+.segmentPill {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.segmentLabel {
+  position: relative;
+  z-index: 1;
+}
+
+.segmentActive {
+  color: var(--text-primary);
+}
+
+.composer {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.composerTop {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.composerTag {
+  color: var(--text-secondary);
+  flex: none;
+}
+
+.composerInput {
+  flex: 1;
+  font: inherit;
+  font-size: 1.02rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.composerInput::placeholder {
+  color: var(--text-placeholder);
+}
+
+.composerInput:focus {
+  outline: none;
+}
+
+.composerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.1rem;
+  background: var(--bg-raised);
+}
+
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+}
+
+.fieldValue {
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.composerSpacer {
+  flex: 1;
+}
+
+.switchNote {
+  padding: 0.8rem 1.1rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+/* ── Trust band ───────────────────────────────────────────────────────── */
+
+.trustBand {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2.5rem;
+  padding-block: 1.75rem;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.trustItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.86rem;
+  font-weight: 550;
+  color: var(--text-tertiary);
+}
+
+.trustMark {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: var(--action-subtle);
+  color: var(--action-subtle-text);
+  flex: none;
+}
+
+/* ── Ticker ───────────────────────────────────────────────────────────── */
+
+.ticker {
+  background: var(--bg-inverse);
+  overflow: hidden;
+  padding-block: 0.9rem 1rem;
+}
+
+.tickerHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-on-inverse);
+  margin-bottom: 0.75rem;
+}
+
+.tickerTrack {
+  display: flex;
+  width: max-content;
+  animation: slide 52s linear infinite;
+}
+
+.ticker:hover .tickerTrack {
+  animation-play-state: paused;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tickerTrack {
+    animation: none;
+  }
+}
+
+.tickerItem {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  padding-inline: 1.5rem;
+  border-right: 1px solid var(--border-on-inverse);
+  white-space: nowrap;
+  color: var(--text-on-inverse);
+  font-size: 0.88rem;
+}
+
+.tickerPrice {
+  color: var(--accent-on-inverse);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.tickerMeta {
+  color: var(--text-on-inverse-soft);
+  font-size: 0.74rem;
+  opacity: 0.7;
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────── */
+
+.section {
+  padding-block: clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.headLabel {
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 0.7rem;
+}
+
+.headSub {
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  max-width: 48ch;
+  margin-top: 0.6rem;
+}
+
+/* ── Tinted feature panels: the Bumpa rhythm lesson ──────────────────── */
+
+.panelGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 880px) {
+  .panelGrid2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.panel {
+  border-radius: var(--radius);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow: hidden;
+}
+
+.panelWide {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 880px) {
+  .panelWide {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tintGreen {
+  background: var(--tint-green);
+}
+.tintSky {
+  background: var(--tint-sky);
+}
+.tintBlush {
+  background: var(--tint-blush);
+}
+.tintSand {
+  background: var(--tint-sand);
+}
+
+.panelLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--action-subtle-text);
+  margin-top: auto;
+}
+
+.panelLink:hover {
+  gap: 0.6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panelLink:hover {
+    gap: 0.4rem;
+  }
+}
+
+/* Product mocks living inside panels */
+
+.mock {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.mockBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.9rem;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.mockBody {
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.mockRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.83rem;
+  color: var(--text-tertiary);
+}
+
+.mockRowStrong {
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.mockDivider {
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.storeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.storeTile {
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+  padding: 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.storeSwatch {
+  height: 42px;
+  border-radius: 5px;
+  background: var(--bg-sunken);
+}
+
+.storeName {
+  font-size: 0.66rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.storePrice {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ── Request board ────────────────────────────────────────────────────── */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.chipFilter {
+  padding: 0.42rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-tertiary);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.chipFilter:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.chipActive {
+  background: var(--action-primary);
+  border-color: var(--action-primary);
+  color: var(--action-primary-text);
+}
+
+.board {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(262px, 1fr));
+}
+
+.request {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 1.05rem;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.request:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .request,
+  .request:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+.requestTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cat {
+  color: var(--text-secondary);
+}
+
+.countdown {
+  color: var(--warning-text);
+  background: var(--warning-fill);
+  padding: 0.16rem 0.45rem;
+  border-radius: 4px;
+}
+
+.requestTitle {
+  font-size: 0.98rem;
+  font-weight: 620;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.requestBudget {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.budgetAmt {
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.budgetLbl {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.requestFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.bidCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.bidCountHot {
+  color: var(--action-subtle-text);
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.dist {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.agentFlag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 620;
+  color: var(--agent-text);
+  background: var(--agent-fill);
+  border: 1px solid var(--agent-border);
+  padding: 0.16rem 0.45rem;
+  border-radius: 4px;
+}
+
+/* ── Inverse sections ─────────────────────────────────────────────────── */
+
+.inverse {
+  background: var(--bg-inverse);
+  color: var(--text-on-inverse);
+  padding-block: clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.inverse .h2,
+.inverse .h3 {
+  color: var(--text-on-inverse);
+}
+
+.inverse .h2 em {
+  font-style: normal;
+  color: var(--accent-on-inverse);
+}
+
+.inverse .headSub,
+.inverse .lede,
+.inverse .body {
+  color: var(--text-on-inverse-soft);
+}
+
+.inverse .headLabel {
+  color: var(--accent-on-inverse);
+}
+
+.splitWide {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .splitWide {
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-top: 2rem;
+}
+
+.step {
+  display: flex;
+  gap: 0.9rem;
+}
+
+.stepNum {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--bg-inverse);
+  background: var(--accent-on-inverse);
+}
+
+.stepTitle {
+  font-weight: 640;
+  font-size: 0.98rem;
+  margin-bottom: 0.2rem;
+}
+
+/* ── Bid feed ─────────────────────────────────────────────────────────── */
+
+.feedCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.feedHead {
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+}
+
+.feedRequest {
+  font-weight: 650;
+  font-size: 0.98rem;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.3rem;
+  color: var(--text-primary);
+}
+
+.feedMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.feedLive {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--success-text);
+  font-weight: 620;
+}
+
+.bid {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.bid:last-child {
+  border-bottom: 0;
+}
+
+.bidAgent {
+  background: var(--agent-fill);
+  box-shadow: inset 3px 0 0 var(--agent-icon);
+}
+
+.avatar {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--bg-raised);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-subtle);
+}
+
+.bidBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.bidTop {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.merchant {
+  font-weight: 620;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.bidWhy {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--agent-text);
+}
+
+.bidNote {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.bidRight {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.price {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.68rem;
+  font-weight: 640;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.chipNew {
+  background: var(--bid-new-fill);
+  color: var(--bid-new-text);
+}
+.chipAgent {
+  background: var(--bid-agent-fill);
+  color: var(--bid-agent-text);
+  border: 1px solid var(--agent-border);
+}
+.chipCounter {
+  background: var(--bid-counter-fill);
+  color: var(--bid-counter-text);
+}
+.chipOutbid {
+  background: var(--bid-outbid-fill);
+  color: var(--bid-outbid-text);
+}
+
+/* ── Price range scale ────────────────────────────────────────────────── */
+
+/* Discrete zones, not a gradient. A gradient implies continuous change;
+   these boundaries are hard rules, so they get hard edges and real numbers. */
+.range {
+  margin-top: 1rem;
+}
+
+.rangeBidRow {
+  position: relative;
+  height: 40px;
+}
+
+.rangeBid {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 130px;
+}
+
+.rangeBidLabel {
+  font-size: 0.68rem;
+  font-weight: 650;
+  color: var(--accent-on-inverse);
+  white-space: nowrap;
+}
+
+.rangeBidAmt {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-on-inverse);
+  display: block;
+  line-height: 1.3;
+}
+
+.rangeBidStem {
+  width: 1px;
+  height: 8px;
+  background: var(--accent-on-inverse);
+  margin: 0.2rem auto 0;
+}
+
+.rangeTrack {
+  position: relative;
+  height: 14px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--bg-inverse-raised);
+  border: 1px solid var(--border-on-inverse);
+}
+
+/* Out of bounds. Muted rather than saturated: these are rules, not errors,
+   and a loud red next to a green brand is what made it look like a rainbow. */
+.rangeOut {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--danger-900) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+.rangeZone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--buffer-clearing);
+}
+
+.rangeDot {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-on-inverse);
+  border: 2px solid var(--bg-inverse);
+  transform: translate(-50%, -50%);
+}
+
+.rangeMarks {
+  position: relative;
+  height: 48px;
+  margin-top: 0.45rem;
+}
+
+.rangeMark {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 108px;
+}
+
+.rangeTick {
+  width: 1px;
+  height: 7px;
+  background: var(--border-on-inverse);
+  margin: 0 auto 0.3rem;
+}
+
+.rangeAmt {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-on-inverse);
+}
+
+.rangeLbl {
+  font-size: 0.64rem;
+  line-height: 1.35;
+  color: var(--text-on-inverse-soft);
+}
+
+/* ── POS ──────────────────────────────────────────────────────────────── */
+
+.posWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.pos {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md);
+  max-width: 340px;
+  width: 100%;
+}
+
+.posBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--chrome-seller-bg);
+  color: var(--chrome-seller-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.posModeChip {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.14rem 0.42rem;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+  opacity: 0.7;
+}
+
+.posBody {
+  padding: 1.15rem 1.05rem 1.05rem;
+}
+
+.posLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  padding: 0.3rem 0;
+  color: var(--text-tertiary);
+}
+
+.posTotalLbl {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.63rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 0.85rem;
+}
+
+.posTotal {
+  font-size: clamp(1.85rem, 5vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.posBtn {
+  display: block;
+  width: 100%;
+  margin-top: 0.85rem;
+  padding: 0.88rem 1rem;
+  border: 0;
+  border-radius: 9px;
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.posBtn:hover {
+  background: var(--action-primary-hover);
+}
+
+.outbox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.79rem;
+  font-weight: 600;
+  background: var(--outbox-fill);
+  color: var(--outbox-text);
+}
+
+.outboxCount {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  padding: 0.05rem 0.45rem;
+  border-radius: 4px;
+  background: var(--outbox-count-bg);
+  color: var(--outbox-count-text);
+}
+
+/* ── Plans ────────────────────────────────────────────────────────────── */
+
+.placeholderNote {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  border: 1px dashed var(--border-on-inverse);
+  color: var(--accent-on-inverse);
+  margin-bottom: 1.25rem;
+}
+
+.billingWrap {
+  text-align: center;
+  margin-bottom: 2.25rem;
+}
+
+.billingToggle {
+  display: inline-flex;
+  padding: 4px;
+  gap: 3px;
+  border-radius: 10px;
+  background: var(--bg-inverse-raised);
+  border: 1px solid var(--border-on-inverse);
+}
+
+.billingOpt {
+  position: relative;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1.3rem;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-on-inverse-soft);
+  cursor: pointer;
+}
+
+.billingOpt:hover {
+  color: var(--text-on-inverse);
+}
+
+/* Separate layer so Motion slides it between options with layoutId
+   instead of cross-fading two backgrounds. */
+.billingPill {
+  position: absolute;
+  inset: 0;
+  border-radius: 7px;
+  background: var(--text-on-inverse);
+}
+
+.billingLabel {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.billingActive {
+  color: var(--bg-inverse);
+}
+
+.billingSave {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.35rem;
+  border-radius: 4px;
+  background: var(--action-on-inverse);
+  color: var(--action-on-inverse-text);
+  white-space: nowrap;
+}
+
+.planGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  text-align: left;
+}
+
+@media (min-width: 780px) {
+  .planGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-on-inverse);
+  background: var(--bg-inverse-raised);
+}
+
+.planFeatured {
+  border-color: var(--accent-on-inverse);
+}
+
+.planName {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-on-inverse);
+}
+
+.planFor {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text-on-inverse-soft);
+  min-height: 2.6em;
+}
+
+.planPrice {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--text-on-inverse);
+}
+
+.planPriceTbd {
+  color: var(--accent-on-inverse);
+  font-size: 1.5rem;
+}
+
+.planMeta {
+  font-size: 0.76rem;
+  color: var(--text-on-inverse-soft);
+  opacity: 0.8;
+}
+
+.planList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0 0;
+  font-size: 0.86rem;
+  color: var(--text-on-inverse-soft);
+}
+
+.planList li {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.check {
+  color: var(--accent-on-inverse);
+  font-weight: 700;
+  flex: none;
+}
+
+.planCta {
+  margin-top: auto;
+  padding-top: 0.6rem;
+}
+
+/* ── Testimonials ─────────────────────────────────────────────────────── */
+
+.brandBlock {
+  background: var(--bg-brand-block);
+  color: var(--action-primary-text);
+  padding-block: clamp(3.5rem, 7vw, 5rem);
+}
+
+.brandBlock .h2 {
+  color: var(--action-primary-text);
+}
+
+/* Testimonials run as an infinite marquee, full-bleed so cards are clipped
+   at both edges rather than boxed. The track holds two identical copies and
+   travels exactly -50%, which puts copy two where copy one started.
+   Spacing is margin-right on the card, NOT gap on the track: gap would add
+   an extra space between the two halves and the loop would visibly jump. */
+.quoteMarquee {
+  margin-top: 2.25rem;
+  overflow: hidden;
+  text-align: left;
+}
+
+.quoteTrack {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  animation: quoteSlide 88s linear infinite;
+}
+
+.quoteMarquee:hover .quoteTrack,
+.quoteMarquee:focus-within .quoteTrack {
+  animation-play-state: paused;
+}
+
+@keyframes quoteSlide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quoteTrack {
+    animation: none;
+  }
+  .quoteMarquee {
+    overflow-x: auto;
+  }
+}
+
+.quote {
+  flex: none;
+  width: 336px;
+  margin-right: 1rem;
+  background: var(--bg-surface);
+  border-radius: 14px;
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Person first, quote second. Scanning a face and a shop name is faster
+   than scanning a paragraph, and it is how Bumpa orders theirs. */
+.quoteWho {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.avatarWrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: none;
+  display: block;
+}
+
+.avatarWrap svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.quoteName {
+  font-size: 0.9rem;
+  font-weight: 660;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.quoteLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-size: 0.76rem;
+  font-weight: 550;
+  color: var(--action-subtle-text);
+  margin-top: 0.15rem;
+}
+
+.quoteLink:hover {
+  text-decoration: underline;
+}
+
+.quoteLinkIcon {
+  width: 11px;
+  height: 11px;
+  flex: none;
+}
+
+.quoteText {
+  font-size: 0.91rem;
+  line-height: 1.62;
+  color: var(--text-tertiary);
+}
+
+.quoteMeta {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  margin-top: auto;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ── FAQ ──────────────────────────────────────────────────────────────── */
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 780px;
+  margin-inline: auto;
+}
+
+.faqItem {
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+.faqQ {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.05rem 1.2rem;
+  font-size: 0.96rem;
+  font-weight: 620;
+  cursor: pointer;
+  list-style: none;
+  color: var(--text-primary);
+}
+
+.faqQ::-webkit-details-marker {
+  display: none;
+}
+
+.faqQ::after {
+  content: "+";
+  font-family: var(--font-mono), monospace;
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  flex: none;
+}
+
+.faqItem[open] .faqQ::after {
+  content: "−";
+}
+
+.faqA {
+  padding: 0 1.2rem 1.15rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* ── Closing CTA ──────────────────────────────────────────────────────── */
+
+.closer {
+  border-radius: var(--radius);
+  background: var(--bg-inverse);
+  color: var(--text-on-inverse);
+  padding: clamp(2.5rem, 6vw, 4rem);
+  text-align: center;
+}
+
+.closer .h2 {
+  color: var(--text-on-inverse);
+}
+
+.closerRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: center;
+  margin-top: 1.75rem;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+
+.footer {
+  border-top: 1px solid var(--border-subtle);
+  padding-block: 3rem 2rem;
+  margin-top: clamp(3rem, 6vw, 5rem);
+}
+
+.footerGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .footerGrid {
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+  }
+}
+
+.footerCol h4 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.85rem;
+  color: var(--text-primary);
+}
+
+.footerCol ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.footerCol a {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.footerCol a:hover {
+  color: var(--text-primary);
+}
+
+.footerBlurb {
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 32ch;
+  margin-top: 0.75rem;
+}
+
+.footerBase {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}

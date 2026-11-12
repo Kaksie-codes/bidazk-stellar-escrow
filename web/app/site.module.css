@@ -1,0 +1,86 @@
+/* Shared chrome for inner pages. Same type and tokens as the landing page,
+   one bar instead of two. */
+
+.inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-canvas) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  height: 62px;
+}
+
+.brand {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  flex: none;
+}
+
+.brandDot {
+  color: var(--brand);
+}
+
+.links {
+  display: flex;
+  gap: 1.1rem;
+}
+
+.link {
+  font-size: 0.86rem;
+  font-weight: 550;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.link:hover,
+.link[aria-current="page"] {
+  color: var(--text-primary);
+}
+
+.link[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-color: var(--brand);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.cta {
+  display: none;
+  font-weight: 650;
+  font-size: 0.88rem;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+}
+
+.cta:hover {
+  background: var(--action-primary-hover);
+}
+
+@media (min-width: 560px) {
+  .cta {
+    display: inline-flex;
+  }
+}

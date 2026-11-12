@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bidazk-web",
+  "compatibility_date": "2026-08-13",
+
+  // Assets-only deployment: there is no "main" entry, so Cloudflare serves
+  // the static export directly from its edge with no Worker in the request
+  // path. The presence of this file also stops `wrangler deploy` from
+  // autodetecting Next.js and rewriting the project onto the OpenNext
+  // server runtime, which cannot build against `output: "export"`.
+  "assets": {
+    "directory": "./out",
+    // Serve the exported 404.html rather than a bare Cloudflare error page.
+    "not_found_handling": "404-page"
+  }
+}

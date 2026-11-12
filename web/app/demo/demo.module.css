@@ -2032,3 +2032,22 @@ button.product:hover {
     width: 100%;
   }
 }
+
+/* Product page on wide screens: two equal columns that may shrink. Plain
+   1fr columns grow to the image's intrinsic 720px width, and the card's
+   overflow: hidden then clipped the right column, pay button included. */
+@media (min-width: 900px) {
+  .detail {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.detailImg,
+.detailBody {
+  min-width: 0;
+}
+
+.detailImg img {
+  max-width: 100%;
+}

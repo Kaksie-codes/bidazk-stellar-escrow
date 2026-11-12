@@ -1491,3 +1491,544 @@ button.product:hover {
 .referee .btnPrimary {
   align-self: flex-start;
 }
+
+/* ── Search: request form, scan terminal, skeletons, results ───────── */
+
+.search {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.searchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.2rem;
+  border-radius: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+.searchLabel {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.searchRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 1.05rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+}
+
+.searchInput:focus,
+.budgetField input:focus {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 0;
+  border-color: transparent;
+}
+
+.budgetRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* Label on its own line, then From – To side by side at any width. */
+.budgetLabel {
+  flex-basis: 100%;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.budgetField {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-canvas);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 200px;
+}
+
+.budgetField input {
+  font: inherit;
+  color: var(--text-primary);
+  border: 0;
+  background: transparent;
+  padding: 0.55rem 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.budgetDash {
+  color: var(--text-secondary);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chipBtn {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.chipBtn:hover:not(:disabled) {
+  border-color: var(--brand);
+  background: var(--action-subtle);
+}
+
+.chipBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* The scan terminal: deliberately a "machine at work" look, on the same
+   green-black ground as the escrow card so it still reads as Bidazk. */
+.terminal {
+  border-radius: 14px;
+  overflow: hidden;
+  background: #040d04;
+  border: 1px solid #143a14;
+  box-shadow: 0 0 0 1px rgba(82, 197, 33, 0.08), 0 18px 40px -20px rgba(20, 168, 0, 0.45);
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.termBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  background: #0a1a0a;
+  border-bottom: 1px solid #143a14;
+  color: #6fbf5a;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.termDots {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.termDots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #1f4d1f;
+}
+
+.termDots i:first-child {
+  background: #52c521;
+}
+
+.termPct {
+  margin-left: auto;
+  color: #8ddc63;
+  font-variant-numeric: tabular-nums;
+}
+
+.termBody {
+  padding: 0.9rem 1rem 1rem;
+  min-height: 11rem;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: #7fd35f;
+  overflow-wrap: anywhere;
+}
+
+.termBody p {
+  animation: termIn 0.18s ease-out;
+}
+
+.termCmd {
+  color: #c6f5b0;
+}
+
+.termMatch {
+  color: #dcffc9;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(82, 197, 33, 0.55);
+}
+
+.caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.2em;
+  vertical-align: -0.15em;
+  background: #8ddc63;
+  animation: blink 0.9s steps(1) infinite;
+}
+
+.termProgress {
+  height: 3px;
+  background: #0f240f;
+}
+
+.termProgress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #14a800, #8ddc63);
+  box-shadow: 0 0 10px #52c521;
+  transition: width 0.35s ease;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes termIn {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+}
+
+/* Skeletons */
+
+.skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton {
+  display: flex;
+  gap: 0.9rem;
+  padding: 0.9rem;
+  border-radius: 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+.skelImg,
+.skelLines span {
+  background: linear-gradient(90deg, var(--bg-raised) 0%, var(--bg-sunken) 50%, var(--bg-raised) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+  border-radius: 8px;
+}
+
+.skelImg {
+  width: 96px;
+  height: 72px;
+  flex: none;
+}
+
+.skelLines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  padding-top: 0.3rem;
+}
+
+.skelLines span {
+  height: 0.75rem;
+}
+
+.skelLines span:nth-child(1) {
+  width: 55%;
+}
+
+.skelLines span:nth-child(2) {
+  width: 85%;
+}
+
+.skelLines span:nth-child(3) {
+  width: 35%;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* No match */
+
+.noMatch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.3rem;
+  border-radius: 14px;
+  border: 1px dashed var(--border-strong);
+  background: var(--bg-surface);
+}
+
+/* Results */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.resultsHead {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+}
+
+.resultsHead strong {
+  color: var(--text-primary);
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  animation: termIn 0.25s ease-out;
+}
+
+.resultTop {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.resultImg {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex: none;
+}
+
+.resultInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.resultCat {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.resultName {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.bids {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.bidLive,
+.bidOther {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 10px;
+}
+
+.bidLive {
+  background: var(--action-subtle);
+  outline: 1.5px solid var(--brand);
+}
+
+.bidOther {
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+
+.bidShop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.bidShop strong {
+  font-size: 0.95rem;
+}
+
+.bidOther .bidShop strong {
+  font-weight: 600;
+}
+
+.bestTag {
+  display: inline-block;
+  margin-left: 0.45rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+  vertical-align: 0.1em;
+}
+
+.bidMeta {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.bidAmount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bidLive .bidAmount {
+  color: var(--text-money);
+  font-size: 1.05rem;
+}
+
+.demoListing {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.result > .btnPrimary,
+.result > .btnGhost {
+  width: 100%;
+  padding-block: 0.8rem;
+  white-space: normal;
+}
+
+/* Product page: other shops' bids */
+
+.otherBids {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.otherBids ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.otherBids li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.otherPrice {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tinyNote {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 480px) {
+  .resultImg {
+    width: 92px;
+    height: 69px;
+  }
+
+  .searchRow {
+    flex-direction: column;
+  }
+
+  .searchRow .btnPrimary {
+    width: 100%;
+  }
+
+  .budgetField {
+    max-width: none;
+  }
+}
+
+/* Search row: the input takes the space, the button sits beside it. The
+   older `form .btnPrimary { width: 100% }` rule would otherwise stretch the
+   button across the row and squeeze the input to nothing on desktop. */
+.searchForm .searchRow .btnPrimary {
+  width: auto;
+  flex: none;
+  padding: 0.8rem 1.5rem;
+}
+
+.searchForm .searchInput {
+  min-height: 3.2rem;
+  font-size: 1.1rem;
+  border: 2px solid var(--brand);
+  background: var(--bg-surface);
+}
+
+.searchForm .searchInput::placeholder {
+  color: var(--text-placeholder);
+}
+
+@media (max-width: 480px) {
+  .searchForm .searchRow .btnPrimary {
+    width: 100%;
+  }
+}

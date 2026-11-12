@@ -17,7 +17,9 @@ import {
   type DealStatus,
   type Receipt,
 } from "@/lib/escrow/types";
-import { CATALOG, NAIRA_PER_TEST_XLM, catalogItem, type CatalogItem } from "./catalog";
+import { NAIRA_PER_TEST_XLM, catalogItem, type CatalogItem } from "./catalog";
+import SearchPanel, { requestKey, type SearchRequest } from "./search";
+import { bidsFor, LIVE_SHOP_NAME } from "./shops";
 import styles from "./demo.module.css";
 
 /* Ledger time trails the wall clock by a few seconds. Countdowns show the
@@ -145,13 +147,33 @@ function readView(): View {
   return { kind: "list" };
 }
 
-function urlFor(view: View, shop?: string | null): string {
+/* The buyer's last request also lives in the query string, so Back from a
+   product or order lands on the same results. */
+function readSearch(): SearchRequest | null {
+  const q = new URLSearchParams(window.location.search);
+  const text = q.get("q")?.trim();
+  if (!text) return null;
+  const num = (k: string) => (/^\d+$/.test(q.get(k) ?? "") ? Number(q.get(k)) : null);
+  return { q: text, min: num("min"), max: num("max") };
+}
+
+function urlFor(view: View, shop?: string | null, search?: SearchRequest | null): string {
   const q = new URLSearchParams(window.location.search);
   q.delete("item");
   q.delete("order");
   if (shop !== undefined) {
     if (shop) q.set("shop", shop);
     else q.delete("shop");
+  }
+  if (search !== undefined) {
+    q.delete("q");
+    q.delete("min");
+    q.delete("max");
+    if (search) {
+      q.set("q", search.q);
+      if (search.min !== null) q.set("min", String(search.min));
+      if (search.max !== null) q.set("max", String(search.max));
+    }
   }
   if (view.kind === "item") q.set("item", String(view.id));
   if (view.kind === "order") q.set("order", view.id);
@@ -181,6 +203,9 @@ export default function EscrowDemo() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [role, setRole] = useState<Role>("buying");
   const [view, setView] = useState<View>({ kind: "list" });
+  const [search, setSearch] = useState<SearchRequest | null>(null);
+  /* The request whose scan already ran, so Back shows its results instantly. */
+  const [scanned, setScanned] = useState<string | null>(null);
   const [shop, setShop] = useState<string | null>(null);
   const [shopFromLink, setShopFromLink] = useState(false);
   const [balances, setBalances] = useState<Balances | null>(null);
@@ -255,6 +280,7 @@ export default function EscrowDemo() {
         if (!alive) return;
         setWallets(w);
         setView(readView());
+        setSearch(readSearch());
         if (linked && linked !== w.seller) {
           setShop(linked);
           setShopFromLink(true);
@@ -271,7 +297,10 @@ export default function EscrowDemo() {
   }, [apply]);
 
   useEffect(() => {
-    const onPop = () => setView(readView());
+    const onPop = () => {
+      setView(readView());
+      setSearch(readSearch());
+    };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
@@ -382,7 +411,7 @@ export default function EscrowDemo() {
         inspectionSecs: t.inspection,
       });
       addLog({
-        text: `You accepted shop ${short(seller)}'s bid and locked ${money(BigInt(item.price) * UNIT)} in escrow for "${item.name}" (order #${dealId}).`,
+        text: `You accepted ${LIVE_SHOP_NAME}'s bid and locked ${money(BigInt(item.price) * UNIT)} in escrow for "${item.name}" (order #${dealId}).`,
         tone: "ok",
         receipt,
       });
@@ -424,8 +453,12 @@ export default function EscrowDemo() {
   const myShopOrders = deals.filter((d) => d.seller === wallets.seller);
   const activeShop = shop ?? wallets.seller;
   const shopLink = `${window.location.origin}/demo?shop=${wallets.seller}`;
-  const filled = new Set(myOrders.filter((d) => FILLED.includes(d.status)).map((d) => d.itemId));
-  const feed = CATALOG.filter((item) => !filled.has(item.id));
+  /* An item with an open or completed order is already bought; search
+     results link to that order instead of offering to pay again. */
+  const orderForItem = (itemId: number): string | null => {
+    const d = myOrders.find((o) => o.itemId === itemId && FILLED.includes(o.status));
+    return d ? d.id.toString() : null;
+  };
 
   const isOpen = (d: Deal) => !TERMINAL_STATUSES.includes(d.status);
   const order = view.kind === "order" ? deals.find((d) => d.id.toString() === view.id) : undefined;
@@ -516,7 +549,7 @@ export default function EscrowDemo() {
       {view.kind === "item" && item && (
         <>
           <button className={styles.back} onClick={() => window.history.back()}>
-            ← All wanted posts
+            ← {search ? "Back to results" : "Back"}
           </button>
           <article className={styles.detail}>
             <div className={styles.detailImg}>
@@ -524,17 +557,37 @@ export default function EscrowDemo() {
               <span className={styles.productCat}>{item.category}</span>
             </div>
             <div className={styles.detailBody}>
-              <span className={styles.wantedTag}>Wanted post</span>
+              <span className={styles.wantedTag}>{search ? `You asked for “${search.q}”` : "Request"}</span>
               <p className={styles.detailWanted}>&ldquo;{item.wanted}&rdquo;</p>
 
               <div className={styles.detailBid}>
-                <span className={styles.bidLabel}>Winning bid · shop {short(activeShop)}</span>
+                <span className={styles.bidLabel}>
+                  Best bid · {LIVE_SHOP_NAME} · {short(activeShop)}
+                </span>
                 <h2 className={styles.detailName}>{item.name}</h2>
                 <p className={styles.bidNote}>{item.bidNote}</p>
                 <span className={styles.detailPrice}>
                   ₦{item.naira.toLocaleString("en-NG")}{" "}
                   <span className={styles.xlm}>({item.price.toLocaleString("en-NG")} {TOKEN_SYMBOL})</span>
                 </span>
+              </div>
+
+              {/* Display-only: these shops have no wallet behind them. */}
+              <div className={styles.otherBids}>
+                <span className={styles.roleLabel}>Other bids on this request</span>
+                <ul>
+                  {bidsFor(item)
+                    .filter((b) => !b.live)
+                    .map((b) => (
+                      <li key={b.shop}>
+                        <span>
+                          {b.shop} <span className={styles.bidMeta}>· {b.area} · {b.km} km · {b.rating}★</span>
+                        </span>
+                        <span className={styles.otherPrice}>₦{b.naira.toLocaleString("en-NG")}</span>
+                      </li>
+                    ))}
+                </ul>
+                <span className={styles.tinyNote}>Demo listings, shown for comparison. Only {LIVE_SHOP_NAME} can be paid.</span>
               </div>
 
               <ol className={styles.explain}>
@@ -578,7 +631,6 @@ export default function EscrowDemo() {
       {/* ---------------------------------------------------- buyer home */}
       {(view.kind === "list" || (view.kind === "item" && !item)) && role === "buying" && (
         <>
-          {walletStrip}
           <ShopBar
             shop={activeShop}
             own={activeShop === wallets.seller}
@@ -591,44 +643,22 @@ export default function EscrowDemo() {
             <OrderRows title="Your orders" deals={myOrders} side="buyer" now={now} onOpen={(id) => go({ kind: "order", id })} />
           )}
 
-          <section aria-label="Wanted posts">
-            <h2 className={`${styles.h3} ${styles.sectionTitle}`}>Wanted posts with a winning bid</h2>
-            {feed.length === 0 ? (
-              <div className={styles.empty}>
-                You have bought every item on the feed. To rehearse again,{" "}
-                <button className={styles.textButton} onClick={resetWallets} disabled={!!busy}>
-                  start over with new wallets
-                </button>
-                .
-              </div>
-            ) : (
-              <div className={styles.catalog}>
-                {feed.map((c) => (
-                  <button key={c.id} className={styles.product} onClick={() => go({ kind: "item", id: c.id })}>
-                    <div className={styles.productImg}>
-                      <Image src={c.image} alt="" width={720} height={540} sizes="(max-width: 720px) 100vw, 300px" />
-                      <span className={styles.productCat}>{c.category}</span>
-                    </div>
-                    <div className={styles.productBody}>
-                      <span className={styles.wantedTag}>Wanted</span>
-                      <span className={styles.wanted}>&ldquo;{c.wanted}&rdquo;</span>
-                      <span className={styles.bid}>
-                        <span>
-                          <span className={styles.bidLabel}>Winning bid · shop {short(activeShop)}</span>
-                          <span className={styles.productName}>{c.name}</span>
-                        </span>
-                        <span className={styles.bidPrice}>
-                          ₦{c.naira.toLocaleString("en-NG")}
-                          <span className={styles.xlm}>({c.price.toLocaleString("en-NG")} {TOKEN_SYMBOL})</span>
-                        </span>
-                      </span>
-                      <span className={styles.viewLink}>View details →</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </section>
+          <SearchPanel
+            key={search ? requestKey(search) : "empty"}
+            initial={search}
+            instant={search !== null && scanned === requestKey(search)}
+            liveShopAddress={short(activeShop)}
+            orderForItem={orderForItem}
+            onSearch={(r) => {
+              setSearch(r);
+              /* Replace, not push: each new request should not pile up in Back. */
+              window.history.replaceState(null, "", urlFor({ kind: "list" }, undefined, r));
+            }}
+            onComplete={(r) => setScanned(requestKey(r))}
+            onOpenItem={(id) => go({ kind: "item", id })}
+            onOpenOrder={(id) => go({ kind: "order", id })}
+          />
+          {walletStrip}
         </>
       )}
 
@@ -639,7 +669,7 @@ export default function EscrowDemo() {
           <section className={styles.shopCard} aria-label="Your shop">
             <ShopQr link={shopLink} />
             <div className={styles.shopCopy}>
-              <span className={styles.tag}>Your shop · {short(wallets.seller)}</span>
+              <span className={styles.tag}>Your shop · {LIVE_SHOP_NAME} · {short(wallets.seller)}</span>
               <h2 className={styles.h3}>Let a buyer scan this</h2>
               <p className={styles.small}>
                 They point their phone camera at the code, open the link, and
@@ -752,7 +782,7 @@ function ShopBar(props: {
       <div className={styles.shopBarMain}>
         <span className={styles.roleLabel}>Buying from</span>
         <span className={styles.shopName}>
-          Shop <span className={styles.mono}>{short(props.shop)}</span>
+          {LIVE_SHOP_NAME} <span className={styles.mono}>· {short(props.shop)}</span>
         </span>
         <span className={styles.shopHint}>
           {props.own
@@ -863,7 +893,7 @@ function OrderRows(props: { title: string; deals: Deal[]; side: Side; now: numbe
                 {item && <Image className={styles.rowThumb} src={item.image} alt="" width={96} height={72} />}
                 <span className={styles.rowMain}>
                   <span className={styles.dealId}>
-                    Order #{d.id.toString()} · {props.side === "buyer" ? `shop ${short(d.seller)}` : `buyer ${short(d.buyer)}`}
+                    Order #{d.id.toString()} · {props.side === "buyer" ? `${LIVE_SHOP_NAME} ${short(d.seller)}` : `buyer ${short(d.buyer)}`}
                   </span>
                   <span className={styles.rowName}>{item?.name ?? `Item #${d.itemId}`}</span>
                   <span className={`${styles.chip} ${status.tone}`}>
@@ -987,7 +1017,7 @@ function OrderPage({
         <div className={styles.orderTitle}>
           <span className={styles.dealId}>
             Order #{id.toString()} · you are the {buyer ? "buyer" : "shop"} ·{" "}
-            {buyer ? `shop ${short(deal.seller)}` : `buyer ${short(deal.buyer)}`}
+            {buyer ? `${LIVE_SHOP_NAME} ${short(deal.seller)}` : `buyer ${short(deal.buyer)}`}
           </span>
           <h2 className={styles.orderName}>{name}</h2>
           <span className={styles.orderAmount}>

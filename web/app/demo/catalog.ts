@@ -24,6 +24,9 @@ export type CatalogItem = {
   /* What actually locks on testnet: naira / NAIRA_PER_TEST_XLM. */
   price: number;
   bidNote: string;
+  /* Words a buyer might type. Keyword matching stands in for the AI matcher
+     of the full product. */
+  keywords: string[];
 };
 
 export const CATALOG: readonly CatalogItem[] = [
@@ -36,6 +39,7 @@ export const CATALOG: readonly CatalogItem[] = [
     naira: 230000,
     price: 230,
     bidNote: "UK used, battery 89%, comes with charger.",
+    keywords: ["iphone", "iphone 8", "8 plus", "apple", "phone", "smartphone", "ios"],
   },
   {
     id: 2,
@@ -46,6 +50,7 @@ export const CATALOG: readonly CatalogItem[] = [
     naira: 310000,
     price: 310,
     bidNote: "Original screen, true tone on. Free screen guard.",
+    keywords: ["iphone", "iphone x", "apple", "phone", "smartphone", "ios"],
   },
   {
     id: 3,
@@ -56,6 +61,7 @@ export const CATALOG: readonly CatalogItem[] = [
     naira: 185000,
     price: 185,
     bidNote: "Brand new in box, 8GB RAM, 1-year warranty.",
+    keywords: ["android", "phone", "smartphone", "samsung", "tecno", "infinix", "mobile"],
   },
   {
     id: 4,
@@ -66,6 +72,7 @@ export const CATALOG: readonly CatalogItem[] = [
     naira: 1200000,
     price: 1200,
     bidNote: "3 batteries, carry case, 2 spare propeller sets.",
+    keywords: ["drone", "dji", "phantom", "camera drone", "quadcopter", "aerial"],
   },
   {
     id: 5,
@@ -76,6 +83,7 @@ export const CATALOG: readonly CatalogItem[] = [
     naira: 250000,
     price: 250,
     bidNote: "Sealed, serial verifiable on Apple's site.",
+    keywords: ["airpods", "earbuds", "earphones", "headphones", "apple", "audio", "noise cancelling"],
   },
   {
     id: 6,
@@ -86,6 +94,7 @@ export const CATALOG: readonly CatalogItem[] = [
     naira: 150000,
     price: 150,
     bidNote: "20-hour battery, IPX7 waterproof.",
+    keywords: ["speaker", "jbl", "bluetooth speaker", "audio", "music", "sound"],
   },
   {
     id: 7,
@@ -96,6 +105,7 @@ export const CATALOG: readonly CatalogItem[] = [
     naira: 350000,
     price: 350,
     bidNote: "Two weeks battery, scratch-resistant glass.",
+    keywords: ["watch", "smartwatch", "gps watch", "fitness", "garmin", "wearable"],
   },
   {
     id: 8,
@@ -106,8 +116,20 @@ export const CATALOG: readonly CatalogItem[] = [
     naira: 900000,
     price: 900,
     bidNote: "Cycle count 142, no dents, original charger.",
+    keywords: ["laptop", "macbook", "mac", "apple", "computer", "notebook"],
   },
 ];
+
+/* Every word the buyer typed must appear in the item's name, category or
+   keywords. "iphone 8" narrows; "phone" widens. */
+export function searchCatalog(query: string): CatalogItem[] {
+  const words = query.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  if (words.length === 0) return [];
+  return CATALOG.filter((item) => {
+    const hay = [item.name, item.category, ...item.keywords].join(" ").toLowerCase();
+    return words.every((w) => hay.includes(w));
+  });
+}
 
 export function catalogItem(id: number): CatalogItem | undefined {
   return CATALOG.find((item) => item.id === id);
